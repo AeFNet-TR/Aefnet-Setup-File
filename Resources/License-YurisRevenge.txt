@@ -1,0 +1,26 @@
+- Bu Setup Kurulum Dosyasi AeFNeT Yazilim Grubu'na Aittir. AeFNeT, Electronic Arts ile hiçbir þekilde baðlantýlý deðildir. AeFNeT Baðýmsiz bir yazilim grubudur.
+
+- Command & Conquer: Red Alert 2 & Yuri's Revenge ™, Electronic Arts'ýn tescilli ticari markalarýdýr, tüm haklarý saklýdýr.
+http://www.commandandconquer.com
+
+- Devam edebilmek için aþaðýdakileri kabul etmelisiniz ;
+
+- Tüm Telif Haklari ve Yaziliminin Lisans Sahibi AeFNeT Yazilim Grubudur. 
+
+- Kurulum, (Setup) dosyasinin içerisinde bulunan oyunlar "Red Alert 2 Ve Yuri's Revenge" oyunlarini içerir.
+
+- Bu kurulum dosyasi ve platform resmi olarak AeFNeT Yazilim Grubuna aittir. Tüm haklari saklýdýr.
+
+- AeFNeT Yazýlýmý, AeFNeT takdirine baðlý olarak teknik destek veya bakým ile saðlanýr.
+
+- Lisans veren, lisans alan tarafa, AeFNeT yazýlýmýný lisans alan tarafýn bilgisayarýnda veya bilgisayar sisteminde bu Sözleþmenin hüküm ve koþullarýna tabi olarak ücretsiz olarak kullanmasýna izin vermeyi kabul eder.
+
+- Lisans alan taraf, AeFNeT Yazýlýmý ile uyum saðlamaz, kaynak koda dönüþtüremez, tersine mühendislik yapamaz, parçalara ayýrmaya veya baþka bir þekilde kurcalamayacak veya AeFNeT Yazýlýmýna veya herhangi bir parçasýna dayalý türev eserleri deðiþtirmeyecek, satmayacak, kiralayamayacaktýr.
+
+- Lisans alan tarafýn, Yazýlýmý ticari amaçlarla veya Lisans Alan Tarafa karþýlýk olarak finansal kazanç veya baþka bir fayda saðlamasýna neden olan diðer amaçlarla kullanmasýna izin verilmez ve yetkisi yoktur.!
+
+- Lisans alan taraf, Lisans Sahibi'nin AeFNeT Yazýlýmýný kullanmasý veya kötüye kullanmasý veya Lisans Sahibinin herhangi bir ihlali nedeniyle Yazýlým'a yetkisiz eriþimin bir sonucu olarak Lisans Verenin maruz kaldýðý herhangi bir kayýp, hasar, para cezasý veya masrafa karþý Lisans Sahibini tazmin etmeyi kabul eder.
+
+- BU LÝSANSIN ÞARTLARINI KABUL ETMÝYORSANIZ, YAZILIMI SÝZE LÝSANS VERMEK ÝSTEMÝYORUZ VE ÞÝMDÝ AEFNET YAZILIMININ KURULMASININ DURDURULMASI GEREKÝR. Bu durumda, AeFNeT yazýlýmýný þimdi indirmeyi býrakmalý ve AeFNeT yazýlýmýný tamamen sisteminizden kaldýrmalýsýnýz...
+
+	                    ---AEFNET YAZÝLÝM GRUBU---
