@@ -11,9 +11,9 @@ AppName=AeFNeT Yuri's Revenge
 AppVersion=3.1
 AppVerName=AeFNeT Yuri's Revenge
 AppPublisher=https://aefnet.com
-VersionInfoVersion=3.0.0.1
-VersionInfoTextVersion=3.0.0.1
-AppCopyright=AEFNET 2019-2021 ©
+VersionInfoVersion=3.0.0.2
+VersionInfoTextVersion=3.0.0.2
+AppCopyright=AEFNET 2019-2023 ©
 VersionInfoProductName=AeFNeT Yuri's Revenge
 VersionInfoDescription=AeFNeT Setup
 AppPublisherURL=https://aefnet.com
@@ -46,8 +46,8 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 Type: files; Name: "{app}\version"
 
 [Files]
-Source: "C:\Users\AEFNET\Desktop\Dosyalar\Ra3\Red Alert 2\Aefnet.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\AEFNET\Desktop\Dosyalar\Ra3\Red Alert 2\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\Mysterious\Desktop\Ra2New\Aefnet.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Mysterious\Desktop\Ra2New\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: Resources\wic_x86_enu.exe; Flags: dontcopy
 
 
@@ -56,7 +56,7 @@ Name: "{commondesktop}\AEFNET Launcher"; Filename: "{app}\Aefnet.exe"
 Name: "{app}\Uninstall AeFNeT"; Filename: "{uninstallexe}"
 
 [Run]
-Filename: "powershell.exe"; Parameters: "Add-MpPreference -ExclusionPath ""C:\Program Files (x86)\AEFNET\Red Alert 2" ; WorkingDir: {app}; Flags: runhidden
+Filename: "powershell.exe"; Parameters: "Add-MpPreference -ExclusionPath 'C:\Program Files (x86)\AEFNET\Red Alert 2'"; WorkingDir: {app}; Flags: runhidden
 Filename: "{app}\Aefnet.exe"; WorkingDir: "{app}"; Description: "{cm:LaunchProgram,Yuris Revenge}"; Flags: nowait postinstall runascurrentuser skipifsilent
  
 [UninstallDelete]
@@ -68,10 +68,12 @@ Type: files; Name: "{app}\version_u"
 Type: files; Name: "{app}\stats.dmp"
 Type: files; Name: "{app}\spawnmap.ini"
 Type: files; Name: "{app}\spawn.ini"
+Type: files; Name: "{app}\expandspawn09.mix"
 Type: filesandordirs; Name: "{app}\INI"
 Type: filesandordirs; Name: "{app}\Maps"
 Type: filesandordirs; Name: "{app}\Resources"
 Type: filesandordirs; Name: "{app}\Client"
+Type: filesandordirs; Name: "{app}\Saved Games"
 
 [Registry]
 Root: HKLM; Subkey: SOFTWARE\Classes\CLSID\{{1440AD10-6AA8-11D1-B6F9-00A024DDAFD1}\InprocServer32; ValueType: string; ValueData: "blowfish.dll";
