@@ -1,2 +1,10 @@
-
+# Inno Setup ciktilari
+AeFNeT_Setup*.exe
 AefnetSetup.exe
+Output/
+
+# Vanilla RA2/YR staging klasoru (1.8 GB - repo'ya girmez)
+SetupFile/
+
+# .iss yedekleri
+*.iss.bak-*
