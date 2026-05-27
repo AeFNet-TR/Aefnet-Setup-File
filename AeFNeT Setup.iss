@@ -10,8 +10,8 @@
 ;          ISTheme.iss'in son section'i [Code]; oraya dusen ';' yorumlari Pascal'a karisir
 ;          ve "'BEGIN' expected" derleme hatasi verir. Yorum+define BLOGU include'lardan ONCE.
 ; ===========================================================================
-#define AppVer       "3.9.2"
-#define AppVerInfo   "3.9.2.0"
+#define AppVer       "3.9.3"
+#define AppVerInfo   "3.9.3.0"
 #define StagingDir   "SetupFile"
 #define PackageDir   "..\Aefnet-Updater-Live\package"
 #define Net40        "https://download.microsoft.com/download/9/5/A/95A9616B-7A37-4AF6-BC36-D6EA96C8DAAE/dotNetFx40_Full_x86_x64.exe"
@@ -103,7 +103,12 @@ Source: "{#StagingDir}\*"; DestDir: "{app}"; Excludes: "installScript.vdf"; Flag
 ;      VersionWriter*           -> build araci + onun kopyaladigi staging klasoru
 ;      versionconfig.ini        -> build config
 ;      package.zip              -> updater'in SUNUCUYA konan dagitim arsivi; setup.exe icine girmesi 400+ MB bos yer (ve >2.1 GB limiti asar)
-Source: "{#PackageDir}\*"; DestDir: "{app}"; Excludes: "VersionWriter-CopiedFiles\*,VersionWriter.exe,versionconfig.ini,package.zip"; Flags: ignoreversion recursesubdirs createallsubdirs
+;
+;    DIKKAT: Inno Setup'ta Excludes'taki '*' joker karakteri '\' path ayracini GECMEZ.
+;            Bu yuzden 'VersionWriter-CopiedFiles\*' sadece birinci seviyedeki dosyalari
+;            (AefnetUpdater.exe, version) hariç tutar; nested (Resources\*, Resources\Binaries\*)
+;            dosyalar setup'a girer. Her nesting seviyesini ayri ayri listelemek gerekir.
+Source: "{#PackageDir}\*"; DestDir: "{app}"; Excludes: "VersionWriter-CopiedFiles\*,VersionWriter-CopiedFiles\*\*,VersionWriter-CopiedFiles\*\*\*,VersionWriter-CopiedFiles\*\*\*\*,VersionWriter.exe,versionconfig.ini,package.zip"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; 3) Inno Download Plugin icin gecici dosya
 Source: Resources\{#WICFile}; Flags: dontcopy
 
