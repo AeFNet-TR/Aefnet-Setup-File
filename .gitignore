@@ -8,3 +8,4 @@ SetupFile/
 
 # .iss yedekleri
 *.iss.bak-*
+Resources/ndp48-x86-x64-allos-enu.exe

@@ -14,12 +14,16 @@
 #define AppVerInfo   "3.9.3.0"
 #define StagingDir   "SetupFile"
 #define PackageDir   "..\Aefnet-Updater-Live\package"
-#define Net40        "https://download.microsoft.com/download/9/5/A/95A9616B-7A37-4AF6-BC36-D6EA96C8DAAE/dotNetFx40_Full_x86_x64.exe"
-#define XNAredist    "https://download.microsoft.com/download/A/C/2/AC2C903B-E6E8-42C2-9FD7-BEBAC362A930/xnafx40_redist.msi"
-; Indirilen/extract edilen prerequisite dosya adlari -> idpAddFile, ExtractTemporaryFile ve [Code] tek isimden okusun
-#define Net40File     "dotNetFx40_Full_x86_x64.exe"
+; Offline prerequisite dosya adlari -> [Files] dontcopy + ExtractTemporaryFile + [Code] tek isimden okusun.
+; Online URL define'lari (eski Net48/XNAredist web linkleri) kaldirildi: prerequisite'ler
+; setup.exe icine gomulu -> internet olmadan da .NET 4.8 + XNA kurulur (offline kurulum garantisi).
+; .NET 4.8 ICIN OFFLINE installer (ndp48-x86-x64-allos-enu.exe) sart; eski 'ndp48-web.exe' bootstrapper
+; kendisi payload'i internetten indirirdi -> gomulse bile offline calismazdi.
+; WIC kaldirildi: yalnizca XP/2003 (Win<6) icin .NET 4 on kosuluydu; OS tabani Win7 SP1+ oldugu icin
+; gereksiz (WIC Win7+'a gomulu). XNA Framework 4.0 ise hicbir Windows'a gomulu DEGIL -> clientxna.exe
+; (eski-GPU fallback varyanti) icin her hedef OS'ta kurulmali (bkz. XNAinstalled gate).
+#define Net48File     "ndp48-x86-x64-allos-enu.exe"
 #define XNAredistFile "xnafx40_redist.msi"
-#define WICFile       "wic_x86_enu.exe"
 
 #include <.\Inno Download Plugin\idp.iss>
 #include <.\ISTheme\ISTheme.iss>
@@ -97,20 +101,34 @@ Type: files; Name: "{app}\INI\Game Options\RA2 Classic Mode.ini"
 [Files]
 ; 1) Vanilla RA2/YR oyun dosyalari (staging klasoru)
 ;    installScript.vdf -> Steam'in InstallScript'i; Aefnet kurulumunda kullanilmaz, [Registry] ayni isi zaten yapiyor
-Source: "{#StagingDir}\*"; DestDir: "{app}"; Excludes: "installScript.vdf"; Flags: ignoreversion recursesubdirs createallsubdirs
+;    Dedup: asagidaki 10 mix hem staging'de hem package'ta BIREBIR ayni (relpath + boyut). Package zaten
+;    ayni dosyayi {app}'a kuruyor -> setup'a iki kez girmesin (~659 MB tasarruf; 2.1 GB tek-dosya limiti).
+;    Bunlar #2 (package) kaynagi tarafindan saglanir. (Ayni-isim-farkli-boyut cakisma YOK -> hepsi exact-dup.)
+Source: "{#StagingDir}\*"; DestDir: "{app}"; Excludes: "installScript.vdf,ra2.mix,ra2md.mix,langmd.mix,language.mix,multimd.mix,MULTI.MIX,expandmd01.mix,mapsmd03.mix,maps01.mix,maps02.mix"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; 2) Aefnet'in guncel updater paketi (Aefnet.exe, *.mix, AeFNetSpawner.dll, INI, Maps, Resources, version, ...)
 ;    Excludes:
-;      VersionWriter*           -> build araci + onun kopyaladigi staging klasoru
-;      versionconfig.ini        -> build config
-;      package.zip              -> updater'in SUNUCUYA konan dagitim arsivi; setup.exe icine girmesi 400+ MB bos yer (ve >2.1 GB limiti asar)
+;      VersionWriter-CopiedFiles -> VersionWriter'in urettigi staging klasoru (AefnetServices.dll,
+;                                   ClientUpdater.dll, OpenGL/Windows/XNA binary'leri ...); setup'a GIRMEMELI
+;      VersionWriter.exe         -> build araci
+;      versionconfig.ini         -> build config
+;      package.zip               -> updater'in SUNUCUYA konan dagitim arsivi; setup.exe icine girmesi 400+ MB bos yer (ve >2.1 GB limiti asar)
+;      updateexec / preupdateexec -> updater'in MEVCUT kurulumda calistirdigi [Rename]/[Delete]
+;                                   komut dosyalari (eski dosyalari sil/yeniden adlandir). Temiz
+;                                   kurulumda anlamsiz -> setup'a girmemeli (gereksiz, hatta taze
+;                                   dosyalari silebilir)
+;      *.lzma                     -> updater'in indirme delta'lari (maps01/02/mapsmd03.mix.lzma);
+;                                   setup .mix'leri sikistirilmamis gonderiyor -> .lzma gereksiz
 ;
-;    DIKKAT: Inno Setup'ta Excludes'taki '*' joker karakteri '\' path ayracini GECMEZ.
-;            Bu yuzden 'VersionWriter-CopiedFiles\*' sadece birinci seviyedeki dosyalari
-;            (AefnetUpdater.exe, version) hariç tutar; nested (Resources\*, Resources\Binaries\*)
-;            dosyalar setup'a girer. Her nesting seviyesini ayri ayri listelemek gerekir.
-Source: "{#PackageDir}\*"; DestDir: "{app}"; Excludes: "VersionWriter-CopiedFiles\*,VersionWriter-CopiedFiles\*\*,VersionWriter-CopiedFiles\*\*\*,VersionWriter-CopiedFiles\*\*\*\*,VersionWriter.exe,versionconfig.ini,package.zip"; Flags: ignoreversion recursesubdirs createallsubdirs
-; 3) Inno Download Plugin icin gecici dosya
-Source: Resources\{#WICFile}; Flags: dontcopy
+;    NOT: Excludes'ta backslash'SIZ desen (sadece 'VersionWriter-CopiedFiles') her dosya/dizinin
+;         ADIYLA eslesir; bir dizin eslesince TUM icerigi (her derinlikte) atlanir. Eski
+;         'VersionWriter-CopiedFiles\*\*\*\*' yaklasimi gereksizdi: backslash'li desende '*' '\'
+;         ayracini gecmedigi icin her seviyeyi tek tek listelemek gerekiyordu ve yine de kirilgandi.
+;         Bu davranis izole kurulum testi (LOG ile) ile dogrulandi: klasor hic olusmuyor.
+Source: "{#PackageDir}\*"; DestDir: "{app}"; Excludes: "VersionWriter-CopiedFiles,VersionWriter.exe,versionconfig.ini,package.zip,updateexec,preupdateexec,*.lzma"; Flags: ignoreversion recursesubdirs createallsubdirs
+; 3) Offline prerequisite'ler -> setup.exe icine gomulur, kurulumda ExtractTemporaryFile ile
+;    {tmp}'ye cikarilip calistirilir (online indirme YOK -> internet'siz kurulum calisir)
+Source: Resources\{#Net48File}; Flags: dontcopy
+Source: Resources\{#XNAredistFile}; Flags: dontcopy
 
 [Icons]
 Name: "{commondesktop}\AEFNET Launcher"; Filename: "{app}\Aefnet.exe"; Tasks: desktopicon
@@ -190,48 +208,55 @@ begin
   WizardForm.LicenseNotAcceptedRadio.Color := {#ISThemeTextBoxBackColor};
 end;
 
-function NET4installed(): Boolean;
+function NET48installed(): Boolean;
+var
+  release: Cardinal;
+begin
+  Result := false;
+
+  // .NET Framework 4.8 -> Release DWORD >= 528040 (tum desteklenen OS surumleri icin
+  // minimum esik). Eski kontrol yalnizca 'Install=1' bakiyordu; bu 4.0 da olsa true
+  // donerdi -> 4.8 garanti edilmiyordu. Artik surum esigi ile dogru tespit ediyoruz.
+  if RegQueryDWordValue(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full', 'Release', release) and
+    (release >= 528040) then
+      Result := true;
+end;
+
+function XNAinstalled(): Boolean;
 var
   installed: Cardinal;
 begin
   Result := false;
 
-  if RegQueryDWordValue(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full', 'Install', installed) and
+  // XNA Framework 4.0 Redistributable -> HKLM\...\Microsoft\XNA\Framework\v4.0 'Installed'=1.
+  // XNA hicbir Windows surumune gomulu DEGIL; clientxna.exe (eski-GPU fallback) GAC'taki XNA'ya
+  // baglidir. 32-bit setup process'i 64-bit OS'ta otomatik Wow6432Node'a yonlenir; emin olmak
+  // icin native (HKLM64) view'i da kontrol ediyoruz.
+  if RegQueryDWordValue(HKLM, 'SOFTWARE\Microsoft\XNA\Framework\v4.0', 'Installed', installed) and
+    (installed = 1) then
+      Result := true
+  else if IsWin64 and RegQueryDWordValue(HKLM64, 'SOFTWARE\Microsoft\XNA\Framework\v4.0', 'Installed', installed) and
     (installed = 1) then
       Result := true;
-
-  // client profile doesn't seem to be supported...
-  //if RegQueryDWordValue(HKLM, 'SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Client', 'Install', installed) and
-  //(installed = 1) then
-  //Result := true;
 end;
 
 function InitializeSetup(): Boolean;
-var
-  Version: TWindowsVersion;
 begin
-  GetWindowsVersionEx(Version);
   Result := true;
 
-  if not NET4installed then
-  begin
-    idpAddFile('{#Net40}', ExpandConstant('{tmp}\{#Net40File}'));
+  // .NET 4.8 yoksa kur (her hedef OS: Win7 SP1+). 4.8 yoksa client/updater hicbir sey calismaz.
+  if not NET48installed then
+    ExtractTemporaryFile('{#Net48File}');
 
-    if (Version.Major < 6) then
-      ExtractTemporaryFile('{#WICFile}');
-
-  end
-
-  if (Version.Major < 6) or ((Version.Major = 6) and (Version.Minor = 0)) then
-    idpAddFile('{#XNAredist}', ExpandConstant('{tmp}\{#XNAredistFile}'));
-
-
+  // XNA 4.0 yoksa kur (her hedef OS): clientxna.exe fallback'i icin sart. WIC kaldirildi (XP-only).
+  if not XNAinstalled then
+    ExtractTemporaryFile('{#XNAredistFile}');
 end;
 
 // ---------------------------------------------------------------------------
-//  idpAddFile / ExtractTemporaryFile dosyayi yalnizca tmp klasorune birakir;
-//  kurmak icin ayrica calistirmak gerekir. Dosya yoksa (prerequisite zaten
-//  yukluydu, idpAddFile hic cagrilmadi) sessizce atlanir -> tekrar kurmayiz.
+//  ExtractTemporaryFile dosyayi yalnizca tmp klasorune birakir; kurmak icin ayrica
+//  calistirmak gerekir. Dosya yoksa (prerequisite zaten yukluydu, ExtractTemporaryFile
+//  hic cagrilmadi -> bkz. InitializeSetup kosullari) sessizce atlanir -> tekrar kurmayiz.
 // ---------------------------------------------------------------------------
 procedure RunTempExe(const FileName, Params: String);
 var
@@ -269,8 +294,6 @@ begin
   if CurStep <> ssPostInstall then
     Exit;
 
-  // WIC, eski Windows surumlerinde .NET 4 icin on kosul -> ondan once kurulmali
-  RunTempExe('{#WICFile}', '/quiet /norestart');
-  RunTempExe('{#Net40File}', '/passive /norestart');
+  RunTempExe('{#Net48File}', '/passive /norestart');
   RunTempMsi('{#XNAredistFile}', '/passive /norestart');
 end;
